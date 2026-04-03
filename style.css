@@ -1,0 +1,11 @@
+#pagination {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.pagination-prev,
+.pagination-next {
+  flex: 1;
+  max-width: 20rem;
+}
