@@ -56,7 +56,6 @@
   "footerSocials": {
     "github": "https://github.com/busted-creator/bustedsolver"
   },
-  "backgroundImage": "/background.png",
   "api": {
     "baseUrl": "https://api.bustedcap.com"
   },
