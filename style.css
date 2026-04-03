@@ -1,11 +1,16 @@
-#pagination {
-  display: flex;
-  justify-content: center;
+/* Center the pagination (Previous / Next) navigation */
+#pagination,
+.pagination,
+[class*="pagination"] {
+  display: flex !important;
+  justify-content: center !important;
   gap: 1rem;
 }
 
 .pagination-prev,
-.pagination-next {
+.pagination-next,
+[class*="pagination-prev"],
+[class*="pagination-next"] {
   flex: 1;
   max-width: 20rem;
 }
