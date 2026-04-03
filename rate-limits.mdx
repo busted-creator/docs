@@ -1,0 +1,87 @@
+---
+title: Rate Limits
+description: "Understand rate limits and quotas on the BustedSolver API."
+---
+
+# Rate Limits
+
+BustedSolver enforces rate limits to ensure fair usage and service stability.
+
+## How Rate Limits Work
+
+Each API key has two limits:
+
+| Limit | Description |
+|-------|-------------|
+| **Rate limit** | Maximum requests per minute (e.g., 10/min) |
+| **Request limit** | Total lifetime requests allowed (e.g., 100 total) |
+
+Both limits are visible via the [Check Usage](/usage) endpoint.
+
+## Rate Limit Headers
+
+When you exceed the per-minute rate limit, the API returns a `429` response with a `retry_after` value:
+
+```json
+{
+  "detail": "Rate limit exceeded",
+  "retry_after": 12.5
+}
+```
+
+Wait `retry_after` seconds before making your next request.
+
+## Request Limit
+
+When you hit your total request limit, the key is automatically removed:
+
+```json
+{
+  "detail": "Request limit reached",
+  "message": "You have used all 100 requests. Key removed. Contact admin for a new key."
+}
+```
+
+Contact [admin](https://t.me/bustedcreator) to get a new key.
+
+## Handling Rate Limits
+
+Implement simple retry logic in your code:
+
+```python
+import time
+import httpx
+
+
+def solve_with_retry(api_key, site_key, page_url, action="submit", max_retries=3):
+    headers = {"X-API-Key": api_key}
+    payload = {"site_key": site_key, "page_url": page_url, "action": action}
+
+    for attempt in range(max_retries):
+        r = httpx.post(
+            "https://api.bustedcap.com/api/solve",
+            json=payload,
+            headers=headers,
+            timeout=60,
+        )
+
+        if r.status_code == 200:
+            return r.json()["token"]
+
+        if r.status_code == 429:
+            wait = r.json().get("retry_after", 10)
+            print(f"Rate limited. Waiting {wait}s...")
+            time.sleep(wait)
+            continue
+
+        # other error -- don't retry
+        raise Exception(f"Solve failed ({r.status_code}): {r.json()}")
+
+    raise Exception("Max retries reached")
+```
+
+## Tips
+
+- Space out requests evenly instead of bursting them all at once.
+- Check your remaining requests with [Check Usage](/usage) before running large batches.
+- If you need a higher rate limit or more requests, contact admin.

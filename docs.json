@@ -33,7 +33,7 @@
     "groups": [
       {
         "group": "Getting Started",
-        "pages": ["introduction"]
+        "pages": ["introduction", "authentication", "rate-limits"]
       },
       {
         "group": "API Reference",
@@ -42,6 +42,14 @@
       {
         "group": "SDK",
         "pages": ["sdk"]
+      },
+      {
+        "group": "Guides",
+        "pages": ["best-practices", "faq"]
+      },
+      {
+        "group": "Updates",
+        "pages": ["changelog"]
       }
     ]
   },

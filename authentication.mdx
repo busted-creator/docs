@@ -1,0 +1,78 @@
+---
+title: Authentication
+description: "How to authenticate with the BustedSolver API."
+---
+
+# Authentication
+
+All API requests require an API key sent via the `X-API-Key` header.
+
+## Getting an API Key
+
+Contact the admin on [Telegram](https://t.me/bustedcreator) to get your API key. Keys are prefixed with `sk_live_`.
+
+## Using Your Key
+
+Include your key in every request:
+
+```
+X-API-Key: sk_live_your_key_here
+```
+
+### Python (httpx)
+
+```python
+headers = {"X-API-Key": "sk_live_your_key_here"}
+
+r = httpx.post(
+    "https://api.bustedcap.com/api/solve",
+    json={"site_key": "6Le...", "page_url": "https://example.com", "action": "submit"},
+    headers=headers,
+    timeout=60,
+)
+```
+
+### cURL
+
+```bash
+curl -X POST https://api.bustedcap.com/api/solve \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: sk_live_your_key_here" \
+  -d '{"site_key": "6Le...", "page_url": "https://example.com", "action": "submit"}'
+```
+
+## Key Properties
+
+Each API key has the following properties:
+
+| Property | Description |
+|----------|-------------|
+| **Owner** | Name associated with the key |
+| **Request limit** | Maximum number of solve requests (or unlimited) |
+| **Rate limit** | Maximum requests per minute |
+| **Expiration** | Date when the key expires (or never) |
+
+Use the [Check Usage](/usage) endpoint to view your key details at any time.
+
+## Security Best Practices
+
+- **Never hardcode** your API key in source code. Use environment variables instead.
+- **Never share** your key publicly (e.g., GitHub, Discord, forums).
+- **Rotate keys** if you suspect your key has been compromised -- contact admin for a replacement.
+- Each key is tied to a single owner. Do not share keys across teams or users.
+
+### Using Environment Variables
+
+```python
+import os
+
+api_key = os.environ["BUSTED_API_KEY"]
+```
+
+```bash
+export BUSTED_API_KEY="sk_live_your_key_here"
+```
+
+## Failed Authentication
+
+After **10 consecutive failed authentication attempts**, your IP will be temporarily blocked for 15 minutes. See [Error Codes](/errors) for details.

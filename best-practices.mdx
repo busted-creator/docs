@@ -1,0 +1,100 @@
+---
+title: Best Practices
+description: "Tips for getting the best results from BustedSolver."
+---
+
+# Best Practices
+
+Follow these guidelines to get reliable, high-score tokens from BustedSolver.
+
+## Use the Correct Action String
+
+The `action` parameter must match what the target site uses. If the action is wrong, the token may still be valid but could be rejected by the server.
+
+**How to find the correct action:**
+
+1. Open the target page in your browser.
+2. Open DevTools (F12) and go to the Console tab.
+3. Search the page source for `grecaptcha.execute` -- the action is in the second argument:
+
+```javascript
+grecaptcha.execute("6Le...", { action: "donate" })
+//                                     ^^^^^^^^ this is the action
+```
+
+If no action is specified, use the default `"submit"`.
+
+## Use the Correct Site Key
+
+The site key is a 40-character string starting with `6L`. You can find it in:
+
+- The page HTML: look for `data-sitekey="..."` or `render=6L...` in script tags.
+- JavaScript source: search for `grecaptcha.execute("6L` or `grecaptcha.render`.
+- Network requests: filter for `recaptcha` in DevTools Network tab.
+
+## Set an Appropriate Timeout
+
+- **Recommended timeout: 60 seconds.**
+- First solves for a new site may take up to 15 seconds.
+- Subsequent solves for the same site are typically faster (2-5s).
+- Do not set timeouts below 30 seconds -- you may miss valid tokens.
+
+## Use Tokens Immediately
+
+reCAPTCHA v3 tokens expire after **2 minutes**. Use each token right after receiving it. Do not queue or store tokens for later use.
+
+## Handle Errors Gracefully
+
+Always check the response status code before using the token:
+
+```python
+r = httpx.post("https://api.bustedcap.com/api/solve", json=payload, headers=headers, timeout=60)
+
+if r.status_code == 200:
+    token = r.json()["token"]
+    # use token
+elif r.status_code == 429:
+    # rate limited -- wait and retry
+    time.sleep(r.json().get("retry_after", 10))
+elif r.status_code == 503:
+    # server busy -- retry after a few seconds
+    time.sleep(5)
+else:
+    # log the error
+    print(f"Error {r.status_code}: {r.json()}")
+```
+
+## Monitor Your Usage
+
+Check your remaining requests regularly to avoid unexpected key removal:
+
+```python
+usage = httpx.get(
+    "https://api.bustedcap.com/api/usage",
+    headers={"X-API-Key": api_key},
+).json()
+
+print(f"Used: {usage['requests_used']}/{usage['requests_limit']}")
+print(f"Expires: {usage['expires_at']}")
+```
+
+## Proxy Support
+
+If you need to solve from a specific IP (e.g., to match the IP submitting the form), pass a proxy:
+
+```python
+r = httpx.post(
+    "https://api.bustedcap.com/api/solve",
+    json={
+        "site_key": "6Le...",
+        "page_url": "https://example.com",
+        "action": "submit",
+        "proxy": "user:pass@host:port",
+        "proxy_type": "http",
+    },
+    headers={"X-API-Key": api_key},
+    timeout=60,
+)
+```
+
+Supported proxy types: `http`, `https`, `socks5`.
