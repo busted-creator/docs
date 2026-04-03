@@ -3,10 +3,10 @@
   "theme": "maple",
   "name": "BustedSolver",
   "logo": {
-    "dark": "/logo/logo-dark.svg",
-    "light": "/logo/logo-light.svg"
+    "dark": "/logo/logo-dark.png",
+    "light": "/logo/logo-light.png"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "/favicon.png",
   "colors": {
     "primary": "#8B5CF6",
     "light": "#A78BFA",
