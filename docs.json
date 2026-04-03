@@ -1,5 +1,6 @@
 {
-  "$schema": "https://mintlify.com/schema.json",
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "maple",
   "name": "BustedSolver",
   "logo": {
     "dark": "/logo/logo-dark.svg",
@@ -9,55 +10,47 @@
   "colors": {
     "primary": "#8B5CF6",
     "light": "#A78BFA",
-    "dark": "#7C3AED",
-    "background": {
-      "dark": "#0A0A0B"
-    },
-    "anchors": {
-      "from": "#8B5CF6",
-      "to": "#6D28D9"
-    }
+    "dark": "#7C3AED"
   },
   "modeToggle": {
     "default": "dark",
     "isHidden": true
   },
-  "topbarLinks": [
-    {
-      "name": "API Status",
-      "url": "https://api.bustedcap.com/api/usage"
+  "navbar": {
+    "links": [
+      {
+        "label": "API Status",
+        "href": "https://api.bustedcap.com/api/usage"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Get API Key",
+      "href": "https://t.me/bustedcreator"
     }
-  ],
-  "topbarCtaButton": {
-    "name": "Get API Key",
-    "url": "https://t.me/bustedcreator"
   },
-  "anchors": [
-    {
-      "name": "GitHub",
-      "icon": "github",
-      "url": "https://github.com/busted-creator/bustedsolver"
+  "navigation": {
+    "groups": [
+      {
+        "group": "Getting Started",
+        "pages": ["introduction"]
+      },
+      {
+        "group": "API Reference",
+        "pages": ["solve", "usage", "errors"]
+      },
+      {
+        "group": "SDK",
+        "pages": ["sdk"]
+      }
+    ]
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/busted-creator/bustedsolver"
     }
-  ],
-  "navigation": [
-    {
-      "group": "Getting Started",
-      "pages": ["introduction"]
-    },
-    {
-      "group": "API Reference",
-      "pages": ["solve", "usage", "errors"]
-    },
-    {
-      "group": "SDK",
-      "pages": ["sdk"]
-    }
-  ],
-  "footerSocials": {
-    "github": "https://github.com/busted-creator/bustedsolver"
   },
   "api": {
     "baseUrl": "https://api.bustedcap.com"
-  },
-  "theme": "sequoia"
+  }
 }
