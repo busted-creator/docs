@@ -20,7 +20,7 @@
     "links": [
       {
         "label": "API Status",
-        "href": "https://api.bustedcap.com/api/usage"
+        "href": "https://api.bustedcap.com/health"
       }
     ],
     "primary": {
