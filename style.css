@@ -1,12 +1,1 @@
-/* Center the Previous / Next pagination */
-#pagination {
-  justify-content: center !important;
-}
-
-#pagination > a:first-child,
-#pagination > a:last-child,
-#pagination > div:first-child,
-#pagination > div:last-child {
-  flex: 1 !important;
-  max-width: 22rem !important;
-}
+/* Custom styles for BustedSolver docs */
