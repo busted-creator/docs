@@ -1,0 +1,136 @@
+---
+title: Solve reCAPTCHA
+description: "Solve a reCAPTCHA v3 challenge and get a valid token."
+---
+
+# Solve reCAPTCHA v3
+
+`POST /api/solve`
+
+Submit a reCAPTCHA v3 challenge and receive a valid token.
+
+## Request Headers
+
+| Header | Required | Description |
+|--------|----------|-------------|
+| `X-API-Key` | Yes | Your API key |
+
+## Request Body
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `site_key` | string | Yes | The reCAPTCHA site key (starts with `6L`, 40 characters) |
+| `page_url` | string | Yes | Full URL of the page with reCAPTCHA |
+| `action` | string | No | reCAPTCHA action string (default: `submit`) |
+| `proxy` | string | No | Proxy address (e.g., `user:pass@host:port`) |
+| `proxy_type` | string | No | Proxy protocol: `http`, `https`, `socks5` |
+
+## Example Request
+
+```python
+import httpx
+
+r = httpx.post(
+    "https://api.bustedcap.com/api/solve",
+    json={
+        "site_key": "6LfmULUpAAAAAC_HEF5R4rz2blWdiRSDfq0XZ2xp",
+        "page_url": "https://example.com/donate",
+        "action": "donate",
+    },
+    headers={"X-API-Key": "sk_live_your_key_here"},
+    timeout=60,
+)
+
+data = r.json()
+print(data)
+```
+
+```bash
+curl -X POST https://api.bustedcap.com/api/solve \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: sk_live_your_key_here" \
+  -d '{"site_key": "6LfmULUpAAAAAC_HEF5R4rz2blWdiRSDfq0XZ2xp", "page_url": "https://example.com/donate", "action": "donate"}'
+```
+
+## Success Response
+
+**Status: `200 OK`**
+
+```json
+{
+  "status": "success",
+  "token": "03AFcWeA5_yBo3kH...",
+  "time": 1.84,
+  "cached": false,
+  "remaining": 97
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `status` | string | `"success"` |
+| `token` | string | The reCAPTCHA v3 token to use in your form submission |
+| `time` | float | Solve time in seconds |
+| `cached` | boolean | Whether a cached result was returned |
+| `remaining` | integer or null | Remaining requests on your key (`null` if unlimited) |
+
+## Error Responses
+
+**Invalid site key format -- `400`**
+
+```json
+{
+  "detail": "Invalid site_key format"
+}
+```
+
+**Missing or invalid API key -- `401`**
+
+```json
+{
+  "detail": "Invalid API key"
+}
+```
+
+**Key expired or limit reached -- `403`**
+
+```json
+{
+  "detail": "Request limit reached",
+  "message": "You have used all 100 requests. Key removed. Contact admin for a new key."
+}
+```
+
+**Rate limit exceeded -- `429`**
+
+```json
+{
+  "detail": "Rate limit exceeded",
+  "retry_after": 12.5
+}
+```
+
+**Server busy -- `503`**
+
+```json
+{
+  "status": "error",
+  "message": "Server busy, try again later"
+}
+```
+
+**Solve failed -- `500`**
+
+```json
+{
+  "status": "error",
+  "message": "Failed to obtain token",
+  "time": 15.2
+}
+```
+
+## Notes
+
+- Tokens are **single-use** -- each solve returns a fresh token.
+- Recommended timeout: **60 seconds**. First solves for a new site may take up to 15s; subsequent solves are faster.
+- The `action` parameter must match what the target site expects. Check the site's JavaScript for `grecaptcha.execute(key, {action: "..."})` to find the correct action string.

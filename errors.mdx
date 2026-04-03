@@ -1,0 +1,118 @@
+---
+title: Error Codes
+description: "HTTP status codes and error responses."
+---
+
+# Error Codes
+
+All errors return a JSON body with details about what went wrong.
+
+## Status Codes
+
+| Code | Meaning | Description |
+|------|---------|-------------|
+| `200` | Success | Token solved successfully |
+| `400` | Bad Request | Invalid parameters (e.g., bad site_key format) |
+| `401` | Unauthorized | Missing, invalid, deactivated, or paused API key |
+| `403` | Forbidden | Key expired, limit reached, or IP blocked |
+| `429` | Rate Limited | Too many requests per minute |
+| `500` | Server Error | Solve failed internally |
+| `503` | Service Unavailable | All solver workers are busy |
+
+## Common Errors
+
+### Invalid API Key
+
+```json
+{
+  "detail": "Invalid API key"
+}
+```
+
+Your API key is incorrect or does not exist. Double-check the key value.
+
+### API Key Deactivated
+
+```json
+{
+  "detail": "API key deactivated"
+}
+```
+
+Your key has been disabled by an admin. Contact support.
+
+### API Key Paused
+
+```json
+{
+  "detail": "API key paused"
+}
+```
+
+Your key is temporarily paused. Contact admin to unpause.
+
+### Key Expired
+
+```json
+{
+  "detail": "API key expired",
+  "message": "Your key expired on 2026-04-01. It has been removed. Contact admin for a new key."
+}
+```
+
+Your key has passed its expiration date and was automatically removed.
+
+### Request Limit Reached
+
+```json
+{
+  "detail": "Request limit reached",
+  "message": "You have used all 100 requests. Key removed. Contact admin for a new key."
+}
+```
+
+You have used all allocated requests. The key is automatically removed.
+
+### Rate Limit Exceeded
+
+```json
+{
+  "detail": "Rate limit exceeded",
+  "retry_after": 12.5
+}
+```
+
+Too many requests in one minute. Wait `retry_after` seconds before retrying.
+
+### IP Blocked
+
+```json
+{
+  "detail": "IP blocked"
+}
+```
+
+Your IP has been temporarily blocked after 10 failed authentication attempts. Block lifts after 15 minutes.
+
+### Server Busy
+
+```json
+{
+  "status": "error",
+  "message": "Server busy, try again later"
+}
+```
+
+All solver workers are occupied. Retry after a few seconds.
+
+### Solve Failed
+
+```json
+{
+  "status": "error",
+  "message": "Failed to obtain token",
+  "time": 15.2
+}
+```
+
+The solver could not generate a token. This may happen if the site_key or page_url is incorrect. Verify your parameters and try again.

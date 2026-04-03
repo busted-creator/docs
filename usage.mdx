@@ -1,0 +1,67 @@
+---
+title: Check Usage
+description: "Check your API key usage and remaining requests."
+---
+
+# Check Usage
+
+`GET /api/usage`
+
+Check how many requests you have used and how many remain.
+
+## Request Headers
+
+| Header | Required | Description |
+|--------|----------|-------------|
+| `X-API-Key` | Yes | Your API key |
+
+## Example Request
+
+```python
+import httpx
+
+r = httpx.get(
+    "https://api.bustedcap.com/api/usage",
+    headers={"X-API-Key": "sk_live_your_key_here"},
+    timeout=10,
+)
+
+print(r.json())
+```
+
+```bash
+curl https://api.bustedcap.com/api/usage \
+  -H "X-API-Key: sk_live_your_key_here"
+```
+
+## Success Response
+
+**Status: `200 OK`**
+
+```json
+{
+  "owner": "john",
+  "requests_used": 42,
+  "requests_limit": 100,
+  "rate_per_minute": 10,
+  "expires_at": "2026-05-01T00:00:00+00:00"
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `owner` | string | Key owner name |
+| `requests_used` | integer | Total requests made with this key |
+| `requests_limit` | integer or null | Maximum allowed requests (`null` if unlimited) |
+| `rate_per_minute` | integer | Maximum requests allowed per minute |
+| `expires_at` | string or null | Key expiration date in ISO format (`null` if no expiry) |
+
+## Error Responses
+
+**Missing or invalid API key -- `401`**
+
+```json
+{
+  "detail": "Invalid API key"
+}
+```

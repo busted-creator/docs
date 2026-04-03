@@ -1,0 +1,135 @@
+---
+title: Python SDK
+description: "Official Python SDK for BustedSolver API."
+---
+
+# Python SDK
+
+Use the official Python SDK for easier integration.
+
+## Installation
+
+```bash
+pip install httpx
+```
+
+Then copy the `BustedSolver` class into your project:
+
+```python
+import httpx
+
+
+class BustedSolver:
+    def __init__(self, api_key):
+        self.api_key = api_key
+        self.api_url = "https://api.bustedcap.com"
+
+    def solve(self, site_key, page_url, action="submit", timeout=60):
+        """
+        Solve reCAPTCHA v3 and return the token string.
+
+        Args:
+            site_key: reCAPTCHA site key (starts with 6L...)
+            page_url: Full URL of the page with reCAPTCHA
+            action: reCAPTCHA action string (default: "submit")
+            timeout: Request timeout in seconds (default: 60)
+
+        Returns:
+            str: reCAPTCHA token
+
+        Raises:
+            Exception: If solve fails
+        """
+        r = httpx.post(
+            f"{self.api_url}/api/solve",
+            json={
+                "site_key": site_key,
+                "page_url": page_url,
+                "action": action,
+            },
+            headers={"X-API-Key": self.api_key},
+            timeout=timeout,
+        )
+
+        data = r.json()
+
+        if r.status_code == 200 and data.get("status") == "success":
+            return data["token"]
+
+        detail = data.get("detail") or data.get("message") or str(data)
+        raise Exception(f"Solve failed: {detail}")
+
+    def usage(self):
+        """
+        Check API key usage and remaining requests.
+
+        Returns:
+            dict with keys: owner, requests_used, requests_limit,
+                            rate_per_minute, expires_at
+        """
+        r = httpx.get(
+            f"{self.api_url}/api/usage",
+            headers={"X-API-Key": self.api_key},
+            timeout=10,
+        )
+        return r.json()
+```
+
+## Usage
+
+```python
+solver = BustedSolver("sk_live_your_key_here")
+
+# solve reCAPTCHA v3
+token = solver.solve(
+    site_key="6LfmULUpAAAAAC_HEF5R4rz2blWdiRSDfq0XZ2xp",
+    page_url="https://example.com/donate",
+    action="donate",
+)
+print(f"Token: {token[:50]}...")
+
+# check remaining requests
+usage = solver.usage()
+print(f"Used: {usage['requests_used']}/{usage['requests_limit']}")
+```
+
+## Async Usage
+
+For async projects, use `httpx.AsyncClient`:
+
+```python
+import httpx
+
+
+async def solve_recaptcha(api_key, site_key, page_url, action="submit"):
+    async with httpx.AsyncClient(timeout=60) as client:
+        r = await client.post(
+            "https://api.bustedcap.com/api/solve",
+            json={
+                "site_key": site_key,
+                "page_url": page_url,
+                "action": action,
+            },
+            headers={"X-API-Key": api_key},
+        )
+        data = r.json()
+        if data.get("status") == "success":
+            return data["token"]
+        raise Exception(f"Solve failed: {data}")
+```
+
+## Error Handling
+
+```python
+solver = BustedSolver("sk_live_your_key_here")
+
+try:
+    token = solver.solve(
+        site_key="6Le...",
+        page_url="https://example.com",
+        action="submit",
+    )
+    print(f"Got token: {token[:50]}...")
+except Exception as e:
+    print(f"Error: {e}")
+```

@@ -1,0 +1,51 @@
+---
+title: Introduction
+description: "Solve reCAPTCHA v3 instantly with a simple API call."
+---
+
+# BustedSolver API
+
+BustedSolver is a reCAPTCHA v3 solving service. One API call, one token. Fast, reliable, and simple.
+
+## Why BustedSolver?
+
+- **Fast** -- tokens returned in seconds
+- **Reliable** -- high-score tokens accepted by real sites
+- **Simple** -- one endpoint, one request, one token
+- **Usage tracking** -- monitor your remaining requests anytime
+
+## Quick Start
+
+```python
+import httpx
+
+r = httpx.post(
+    "https://api.bustedcap.com/api/solve",
+    json={
+        "site_key": "6Le...",
+        "page_url": "https://example.com/page",
+        "action": "submit",
+    },
+    headers={"X-API-Key": "sk_live_your_key_here"},
+    timeout=60,
+)
+
+data = r.json()
+print(data["token"])  # reCAPTCHA v3 token
+```
+
+## Base URL
+
+```
+https://api.bustedcap.com
+```
+
+## Authentication
+
+All requests require an API key in the `X-API-Key` header.
+
+```
+X-API-Key: sk_live_your_key_here
+```
+
+Contact the admin to get your API key.
