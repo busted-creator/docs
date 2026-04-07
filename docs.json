@@ -37,7 +37,7 @@
       },
       {
         "group": "API Reference",
-        "pages": ["solve", "usage", "errors"]
+        "pages": ["solve", "tokenize", "usage", "errors"]
       },
       {
         "group": "SDK",

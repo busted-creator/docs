@@ -59,6 +59,55 @@ class BustedSolver:
         detail = data.get("detail") or data.get("message") or str(data)
         raise Exception(f"Solve failed: {detail}")
 
+    def tokenize(self, cc, mm, yyyy, cvv, app_id, loc_id, base_url,
+                 sq_version="1.83.1", email="", billing=None, intent="CHARGE",
+                 timeout=60):
+        """
+        Tokenize a card via Square PCI connect.
+
+        Args:
+            cc: Card number
+            mm: Expiry month
+            yyyy: Expiry year
+            cvv: Card CVV
+            app_id: Square application ID
+            loc_id: Square location ID
+            base_url: Square Online site URL
+            sq_version: Square JS version (default: "1.83.1")
+            email: Buyer email
+            billing: Billing address dict
+            intent: Payment intent (default: "CHARGE")
+            timeout: Request timeout in seconds (default: 60)
+
+        Returns:
+            tuple: (card_nonce, card_info, verification_token)
+
+        Raises:
+            Exception: If tokenization fails
+        """
+        payload = {
+            "cc": cc, "mm": mm, "yyyy": yyyy, "cvv": cvv,
+            "app_id": app_id, "loc_id": loc_id, "base_url": base_url,
+            "sq_version": sq_version, "email": email, "intent": intent,
+        }
+        if billing:
+            payload["billing"] = billing
+
+        r = httpx.post(
+            f"{self.api_url}/api/tokenize",
+            json=payload,
+            headers={"X-API-Key": self.api_key},
+            timeout=timeout,
+        )
+
+        data = r.json()
+
+        if r.status_code == 200 and data.get("status") == "success":
+            return data["card_nonce"], data["card_info"], data["verification_token"]
+
+        detail = data.get("detail") or data.get("message") or str(data)
+        raise Exception(f"Tokenize failed: {detail}")
+
     def usage(self):
         """
         Check API key usage and remaining requests.
@@ -87,6 +136,14 @@ token = solver.solve(
     action="donate",
 )
 print(f"Token: {token[:50]}...")
+
+# tokenize a card via Square PCI
+nonce, info, vtoken = solver.tokenize(
+    cc=cc, mm=mm, yyyy=yyyy, cvv=cvv,
+    app_id="sq0idp-xxxxx", loc_id="LXXXXX",
+    base_url="https://example.square.site",
+)
+print(f"Nonce: {nonce}")
 
 # check remaining requests
 usage = solver.usage()

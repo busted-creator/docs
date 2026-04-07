@@ -1,0 +1,164 @@
+---
+title: Square Tokenizer
+description: "Tokenize a card via Square PCI connect and get a nonce + verification token."
+---
+
+# Square Tokenizer
+
+`POST /api/tokenize`
+
+Tokenize a card through Square's PCI-connect endpoint. Returns a card nonce, card info, and buyer verification token -- ready to use in Square Online checkout.
+
+## Request Headers
+
+| Header | Required | Description |
+|--------|----------|-------------|
+| `X-API-Key` | Yes | Your API key |
+
+## Request Body
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `cc` | string | Yes | Card number |
+| `mm` | string | Yes | Expiry month (e.g., `"03"`) |
+| `yyyy` | string | Yes | Expiry year (e.g., `"2027"`) |
+| `cvv` | string | Yes | Card CVV |
+| `app_id` | string | Yes | Square application ID (starts with `sq0idp-`) |
+| `loc_id` | string | Yes | Square location ID |
+| `base_url` | string | Yes | The Square Online site URL |
+| `sq_version` | string | No | Square JS SDK version (default: `"1.83.1"`) |
+| `email` | string | No | Buyer email for verification |
+| `billing` | object | No | Billing address for buyer verification |
+| `intent` | string | No | Payment intent (default: `"CHARGE"`) |
+
+### Billing Object
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `given_name` | string | First name |
+| `family_name` | string | Last name |
+| `address_lines` | list | Address lines (e.g., `["123 Main St", ""]`) |
+| `city` | string | City |
+| `region` | string | State/province |
+| `postal_code` | string | ZIP/postal code |
+| `country` | string | Country code (e.g., `"US"`) |
+
+## Example Request
+
+```python
+import httpx
+
+r = httpx.post(
+    "https://api.bustedcap.com/api/tokenize",
+    json={
+        "cc": cc,
+        "mm": mm,
+        "yyyy": yyyy,
+        "cvv": cvv,
+        "app_id": "sq0idp-xxxxx",
+        "loc_id": "LXXXXX",
+        "base_url": "https://example.square.site",
+        "email": email,
+        "billing": billing,
+    },
+    headers={"X-API-Key": "sk_live_your_key_here"},
+    timeout=60,
+)
+
+data = r.json()
+print(data)
+```
+
+```bash
+curl -X POST https://api.bustedcap.com/api/tokenize \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: sk_live_your_key_here" \
+  -d '{"cc":"...","mm":"...","yyyy":"...","cvv":"...","app_id":"sq0idp-xxxxx","loc_id":"LXXXXX","base_url":"https://example.square.site"}'
+```
+
+## Success Response
+
+**Status: `200 OK`**
+
+```json
+{
+  "status": "success",
+  "card_nonce": "cnon:XXXXXXXX",
+  "card_info": {
+    "card_brand": "VISA",
+    "last_4": "1111",
+    "exp_month": 12,
+    "exp_year": 2027
+  },
+  "verification_token": "verf:XXXXXXXX",
+  "time": 8.42,
+  "remaining": 95
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `status` | string | `"success"` |
+| `card_nonce` | string | Square card nonce for payment submission |
+| `card_info` | object | Card details (brand, last 4, expiry) |
+| `verification_token` | string | Buyer verification token for SCA/3DS |
+| `time` | float | Processing time in seconds |
+| `remaining` | integer or null | Remaining requests on your key (`null` if unlimited) |
+
+## Error Responses
+
+**Tokenization failed -- `400`**
+
+```json
+{
+  "status": "error",
+  "message": "Card number is invalid.",
+  "time": 3.1
+}
+```
+
+**Missing or invalid API key -- `401`**
+
+```json
+{
+  "detail": "Invalid API key"
+}
+```
+
+**Rate limit exceeded -- `429`**
+
+```json
+{
+  "detail": "Rate limit exceeded",
+  "retry_after": 12.5
+}
+```
+
+**Internal error -- `500`**
+
+```json
+{
+  "status": "error",
+  "message": "Connection timeout",
+  "time": 30.0
+}
+```
+
+## What It Does
+
+The API handles the full Square PCI tokenization flow:
+
+1. **Hydrate** -- initializes a Square PCI session
+2. **Proof-of-Work** -- solves Square's PoW challenge
+3. **Tokenize** -- submits card data to Square's PCI endpoint
+4. **BIN Lookup** -- detects card country
+5. **3DS Init** -- starts 3D Secure method
+6. **Fingerprinting** -- generates browser fingerprints
+7. **Buyer Verification** -- completes SCA verification
+8. **3DS Challenge** -- finalizes 3DS if required
+
+## Notes
+
+- Typical response time is **5-15 seconds** depending on 3DS requirements.
+- The `card_nonce` and `verification_token` are single-use. Request new ones for each transaction.
+- The `app_id` and `loc_id` are specific to each Square Online site. Find them in the site's page source.

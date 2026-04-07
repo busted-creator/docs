@@ -1,20 +1,29 @@
 ---
 title: Introduction
-description: "Solve reCAPTCHA v3 instantly with a simple API call."
+description: "reCAPTCHA v3 solving and Square PCI tokenization in one API."
 ---
 
 # BustedSolver API
 
-BustedSolver is a reCAPTCHA v3 solving service. One API call, one token. Fast, reliable, and simple.
+BustedSolver is an API with two services: **reCAPTCHA v3 solving** and **Square PCI tokenization**. One API call per service. Fast, reliable, and simple.
 
 ## Why BustedSolver?
 
-- **Fast** -- tokens returned in seconds
-- **Reliable** -- high-score tokens accepted by real sites
-- **Simple** -- one endpoint, one request, one token
+- **Fast** -- responses in seconds
+- **Reliable** -- high-score reCAPTCHA tokens and full Square 3DS support
+- **Simple** -- two endpoints, same auth, same API key
 - **Usage tracking** -- monitor your remaining requests anytime
 
+## Services
+
+| Service | Endpoint | Description |
+|---------|----------|-------------|
+| [reCAPTCHA v3 Solver](/solve) | `POST /api/solve` | Solve reCAPTCHA v3 and get a valid token |
+| [Square Tokenizer](/tokenize) | `POST /api/tokenize` | Tokenize a card via Square PCI + 3DS verification |
+
 ## Quick Start
+
+### reCAPTCHA v3
 
 ```python
 import httpx
@@ -32,6 +41,28 @@ r = httpx.post(
 
 data = r.json()
 print(data["token"])  # reCAPTCHA v3 token
+```
+
+### Square Tokenizer
+
+```python
+import httpx
+
+r = httpx.post(
+    "https://api.bustedcap.com/api/tokenize",
+    json={
+        "cc": cc, "mm": mm, "yyyy": yyyy, "cvv": cvv,
+        "app_id": "sq0idp-xxxxx",
+        "loc_id": "LXXXXX",
+        "base_url": "https://example.square.site",
+    },
+    headers={"X-API-Key": "sk_live_your_key_here"},
+    timeout=60,
+)
+
+data = r.json()
+print(data["card_nonce"])          # Square card nonce
+print(data["verification_token"])  # Buyer verification token
 ```
 
 ## Base URL
