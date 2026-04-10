@@ -8,9 +8,22 @@
   },
   "favicon": "/favicon.png",
   "colors": {
-    "primary": "#8B5CF6",
-    "light": "#A78BFA",
-    "dark": "#7C3AED"
+    "primary": "#0a0d12",
+    "light": "#6366f1",
+    "dark": "#ffffff"
+  },
+  "font": {
+    "headings": {
+      "family": "Instrument Serif",
+      "weight": 400
+    },
+    "body": {
+      "family": "Inter",
+      "weight": 400
+    },
+    "code": {
+      "family": "Geist Mono"
+    }
   },
   "modeToggle": {
     "default": "dark",
