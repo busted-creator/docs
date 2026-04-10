@@ -1,6 +1,6 @@
 ---
 title: Python SDK
-description: "Official Python SDK for BustedSolver API."
+description: "Official Python SDK for BustedSolver."
 ---
 
 # Python SDK
@@ -13,7 +13,9 @@ Use the official Python SDK for easier integration.
 pip install httpx
 ```
 
-Then copy the `BustedSolver` class into your project:
+## Setup
+
+Copy the `BustedSolver` class into your project:
 
 ```python
 import httpx
@@ -126,31 +128,40 @@ class BustedSolver:
 
 ## Usage
 
-```python
+<CodeGroup>
+
+```python reCAPTCHA v3
 solver = BustedSolver("sk_live_your_key_here")
 
-# solve reCAPTCHA v3
 token = solver.solve(
     site_key="6LfmULUpAAAAAC_HEF5R4rz2blWdiRSDfq0XZ2xp",
     page_url="https://example.com/donate",
     action="donate",
 )
 print(f"Token: {token[:50]}...")
+```
 
-# tokenize a card via Square PCI
+```python Square Tokenizer
+solver = BustedSolver("sk_live_your_key_here")
+
 nonce, info, vtoken = solver.tokenize(
     cc=cc, mm=mm, yyyy=yyyy, cvv=cvv,
     app_id="sq0idp-xxxxx", loc_id="LXXXXX",
     base_url="https://example.square.site",
 )
 print(f"Nonce: {nonce}")
+```
 
-# check remaining requests
+```python Check Usage
+solver = BustedSolver("sk_live_your_key_here")
+
 usage = solver.usage()
 print(f"Used: {usage['requests_used']}/{usage['requests_limit']}")
 ```
 
-## Async Usage
+</CodeGroup>
+
+## Async
 
 For async projects, use `httpx.AsyncClient`:
 
@@ -175,7 +186,7 @@ async def solve_recaptcha(api_key, site_key, page_url, action="submit"):
         raise Exception(f"Solve failed: {data}")
 ```
 
-## Error Handling
+## Error handling
 
 ```python
 solver = BustedSolver("sk_live_your_key_here")

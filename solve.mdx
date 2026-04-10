@@ -1,33 +1,42 @@
 ---
-title: Solve reCAPTCHA
+title: "Solve reCAPTCHA"
 description: "Solve a reCAPTCHA v3 challenge and get a valid token."
+api: "POST /api/solve"
 ---
 
-# Solve reCAPTCHA v3
+Submit a reCAPTCHA v3 challenge and receive a valid token ready to use in your form submission.
 
-`POST /api/solve`
+## Request
 
-Submit a reCAPTCHA v3 challenge and receive a valid token.
+<ParamField header="X-API-Key" type="string" required>
+  Your API key.
+</ParamField>
 
-## Request Headers
+<ParamField body="site_key" type="string" required>
+  The reCAPTCHA site key (starts with `6L`, 40 characters).
+</ParamField>
 
-| Header | Required | Description |
-|--------|----------|-------------|
-| `X-API-Key` | Yes | Your API key |
+<ParamField body="page_url" type="string" required>
+  Full URL of the page with reCAPTCHA.
+</ParamField>
 
-## Request Body
+<ParamField body="action" type="string">
+  reCAPTCHA action string (default: `submit`).
+</ParamField>
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `site_key` | string | Yes | The reCAPTCHA site key (starts with `6L`, 40 characters) |
-| `page_url` | string | Yes | Full URL of the page with reCAPTCHA |
-| `action` | string | No | reCAPTCHA action string (default: `submit`) |
-| `proxy` | string | No | Proxy address (e.g., `user:pass@host:port`) |
-| `proxy_type` | string | No | Proxy protocol: `http`, `https`, `socks5` |
+<ParamField body="proxy" type="string">
+  Proxy address (e.g., `user:pass@host:port`).
+</ParamField>
 
-## Example Request
+<ParamField body="proxy_type" type="string">
+  Proxy protocol: `http`, `https`, `socks5`.
+</ParamField>
 
-```python
+## Example
+
+<CodeGroup>
+
+```python Python
 import httpx
 
 r = httpx.post(
@@ -45,82 +54,90 @@ data = r.json()
 print(data)
 ```
 
-```bash
+```bash cURL
 curl -X POST https://api.bustedcap.com/api/solve \
   -H "Content-Type: application/json" \
   -H "X-API-Key: sk_live_your_key_here" \
   -d '{"site_key": "6LfmULUpAAAAAC_HEF5R4rz2blWdiRSDfq0XZ2xp", "page_url": "https://example.com/donate", "action": "donate"}'
 ```
 
-## Success Response
+</CodeGroup>
 
-**Status: `200 OK`**
+## Response
 
-```json
-{
-  "status": "success",
-  "token": "03AFcWeA5_yBo3kH...",
-  "time": 1.84,
-  "cached": false,
-  "remaining": 97
-}
-```
+<ResponseField name="status" type="string">
+  `"success"` when the solve completed.
+</ResponseField>
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `status` | string | `"success"` |
-| `token` | string | The reCAPTCHA v3 token to use in your form submission |
-| `time` | float | Solve time in seconds |
-| `cached` | boolean | Whether a cached result was returned |
-| `remaining` | integer or null | Remaining requests on your key (`null` if unlimited) |
+<ResponseField name="token" type="string">
+  The reCAPTCHA v3 token to use in your form submission.
+</ResponseField>
 
-## Error Responses
+<ResponseField name="time" type="float">
+  Solve time in seconds.
+</ResponseField>
 
-**Invalid site key format -- `400`**
+<ResponseField name="cached" type="boolean">
+  Whether a cached result was returned.
+</ResponseField>
 
+<ResponseField name="remaining" type="integer or null">
+  Remaining requests on your key (`null` if unlimited).
+</ResponseField>
+
+## Errors
+
+<AccordionGroup>
+
+<Accordion title="400 -- Invalid site key format">
 ```json
 {
   "detail": "Invalid site_key format"
 }
 ```
+The `site_key` must start with `6L` and be exactly 40 characters.
+</Accordion>
 
-**Missing or invalid API key -- `401`**
-
+<Accordion title="401 -- Invalid API key">
 ```json
 {
   "detail": "Invalid API key"
 }
 ```
+The `X-API-Key` header is missing or does not match any active key.
+</Accordion>
 
-**Key expired or limit reached -- `403`**
-
+<Accordion title="403 -- Request limit reached">
 ```json
 {
   "detail": "Request limit reached",
   "message": "You have used all 100 requests. Key removed. Contact admin for a new key."
 }
 ```
+Your key has exhausted its request quota.
+</Accordion>
 
-**Rate limit exceeded -- `429`**
-
+<Accordion title="429 -- Rate limit exceeded">
 ```json
 {
   "detail": "Rate limit exceeded",
   "retry_after": 12.5
 }
 ```
+Too many requests in a short period; wait `retry_after` seconds before retrying.
+</Accordion>
 
-**Server busy -- `503`**
-
+<Accordion title="503 -- Server busy">
 ```json
 {
   "status": "error",
   "message": "Server busy, try again later"
 }
 ```
+All solver slots are occupied; retry after a brief delay.
+</Accordion>
 
-**Solve failed -- `500`**
-
+<Accordion title="500 -- Solve failed">
 ```json
 {
   "status": "error",
@@ -128,9 +145,15 @@ curl -X POST https://api.bustedcap.com/api/solve \
   "time": 15.2
 }
 ```
+The solver could not produce a valid token within the time limit.
+</Accordion>
+
+</AccordionGroup>
 
 ## Notes
 
-- Tokens are **single-use** -- each solve returns a fresh token.
-- Recommended timeout: **60 seconds**. First solves for a new site may take up to 15s; subsequent solves are faster.
-- The `action` parameter must match what the target site expects. Check the site's JavaScript for `grecaptcha.execute(key, {action: "..."})` to find the correct action string.
+<Info>
+  - Tokens are **single-use** -- each solve returns a fresh token.
+  - Recommended timeout: **60 seconds**. First solves for a new site may take up to 15s; subsequent solves are faster.
+  - The `action` parameter must match what the target site expects. Check the site's JavaScript for `grecaptcha.execute(key, {action: "..."})` to find the correct action string.
+</Info>

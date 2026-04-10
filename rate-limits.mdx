@@ -1,26 +1,31 @@
 ---
-title: Rate Limits
-description: "Understand rate limits and quotas on the BustedSolver API."
+title: "Rate Limits"
+description: "Understand rate limits and quotas."
 ---
-
-# Rate Limits
 
 BustedSolver enforces rate limits to ensure fair usage and service stability.
 
-## How Rate Limits Work
+## How it works
 
-Each API key has two limits:
+<CardGroup cols={2}>
 
-| Limit | Description |
-|-------|-------------|
-| **Rate limit** | Maximum requests per minute (e.g., 10/min) |
-| **Request limit** | Total lifetime requests allowed (e.g., 100 total) |
+<Card title="Rate limit">
+  Maximum requests allowed per minute. Exceeding this returns a `429` response
+  with a `retry_after` value indicating how long to wait.
+</Card>
+
+<Card title="Request limit">
+  Total lifetime requests allowed for your API key. Once reached, the key is
+  automatically removed. Contact admin for a new key.
+</Card>
+
+</CardGroup>
 
 Both limits are visible via the [Check Usage](/usage) endpoint.
 
-## Rate Limit Headers
+## Rate limit response
 
-When you exceed the per-minute rate limit, the API returns a `429` response with a `retry_after` value:
+When you exceed the per-minute rate limit, the API returns:
 
 ```json
 {
@@ -31,7 +36,7 @@ When you exceed the per-minute rate limit, the API returns a `429` response with
 
 Wait `retry_after` seconds before making your next request.
 
-## Request Limit
+## Request limit response
 
 When you hit your total request limit, the key is automatically removed:
 
@@ -42,9 +47,7 @@ When you hit your total request limit, the key is automatically removed:
 }
 ```
 
-Contact [admin](https://t.me/bustedcreator) to get a new key.
-
-## Handling Rate Limits
+## Handling rate limits
 
 Implement simple retry logic in your code:
 
@@ -82,6 +85,8 @@ def solve_with_retry(api_key, site_key, page_url, action="submit", max_retries=3
 
 ## Tips
 
+<Tip>
 - Space out requests evenly instead of bursting them all at once.
 - Check your remaining requests with [Check Usage](/usage) before running large batches.
 - If you need a higher rate limit or more requests, contact admin.
+</Tip>

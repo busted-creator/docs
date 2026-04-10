@@ -1,21 +1,20 @@
 ---
 title: Best Practices
-description: "Tips for getting the best results from BustedSolver."
+description: "Tips for getting the best results."
 ---
 
 # Best Practices
 
 Follow these guidelines to get reliable, high-score tokens from BustedSolver.
 
-## Use the Correct Action String
+## Use the correct action
 
 The `action` parameter must match what the target site uses. If the action is wrong, the token may still be valid but could be rejected by the server.
 
 **How to find the correct action:**
 
-1. Open the target page in your browser.
-2. Open DevTools (F12) and go to the Console tab.
-3. Search the page source for `grecaptcha.execute` -- the action is in the second argument:
+1. Open the target page and view the page source.
+2. Search for `grecaptcha.execute` -- the action is in the second argument:
 
 ```javascript
 grecaptcha.execute("6Le...", { action: "donate" })
@@ -24,7 +23,7 @@ grecaptcha.execute("6Le...", { action: "donate" })
 
 If no action is specified, use the default `"submit"`.
 
-## Use the Correct Site Key
+## Use the correct site key
 
 The site key is a 40-character string starting with `6L`. You can find it in:
 
@@ -32,18 +31,19 @@ The site key is a 40-character string starting with `6L`. You can find it in:
 - JavaScript source: search for `grecaptcha.execute("6L` or `grecaptcha.render`.
 - Network requests: filter for `recaptcha` in DevTools Network tab.
 
-## Set an Appropriate Timeout
+## Set an appropriate timeout
 
-- **Recommended timeout: 60 seconds.**
-- First solves for a new site may take up to 15 seconds.
-- Subsequent solves for the same site are typically faster (2-5s).
-- Do not set timeouts below 30 seconds -- you may miss valid tokens.
+<Tip>
+  Set your HTTP client timeout to **60 seconds**. First solves for a new site may take up to 15 seconds, and subsequent solves are typically 2-5 seconds. Do not set timeouts below 30 seconds -- you may miss valid tokens.
+</Tip>
 
-## Use Tokens Immediately
+## Use tokens immediately
 
-reCAPTCHA v3 tokens expire after **2 minutes**. Use each token right after receiving it. Do not queue or store tokens for later use.
+<Warning>
+  reCAPTCHA v3 tokens expire after **2 minutes**. Use each token right after receiving it. Do not queue or store tokens for later use.
+</Warning>
 
-## Handle Errors Gracefully
+## Handle errors gracefully
 
 Always check the response status code before using the token:
 
@@ -64,7 +64,7 @@ else:
     print(f"Error {r.status_code}: {r.json()}")
 ```
 
-## Monitor Your Usage
+## Monitor your usage
 
 Check your remaining requests regularly to avoid unexpected key removal:
 
@@ -78,7 +78,7 @@ print(f"Used: {usage['requests_used']}/{usage['requests_limit']}")
 print(f"Expires: {usage['expires_at']}")
 ```
 
-## Proxy Support
+## Proxy support
 
 If you need to solve from a specific IP (e.g., to match the IP submitting the form), pass a proxy:
 

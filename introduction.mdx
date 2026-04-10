@@ -3,29 +3,22 @@ title: Introduction
 description: "reCAPTCHA v3 solving and Square PCI tokenization in one API."
 ---
 
-# BustedSolver API
+BustedSolver is a fast, reliable API for reCAPTCHA v3 solving and Square PCI tokenization. One API call per service. Simple auth, real-time usage tracking.
 
-BustedSolver is an API with two services: **reCAPTCHA v3 solving** and **Square PCI tokenization**. One API call per service. Fast, reliable, and simple.
+<CardGroup cols={2}>
+  <Card title="reCAPTCHA v3 Solver" icon="shield-check" href="/solve">
+    Solve reCAPTCHA v3 challenges and receive a high-score token ready to use in your requests.
+  </Card>
+  <Card title="Square Tokenizer" icon="credit-card" href="/tokenize">
+    Tokenize cards through Square PCI and get a card nonce with buyer verification in one call.
+  </Card>
+</CardGroup>
 
-## Why BustedSolver?
+## Quick start
 
-- **Fast** -- responses in seconds
-- **Reliable** -- high-score reCAPTCHA tokens and full Square 3DS support
-- **Simple** -- two endpoints, same auth, same API key
-- **Usage tracking** -- monitor your remaining requests anytime
+<CodeGroup>
 
-## Services
-
-| Service | Endpoint | Description |
-|---------|----------|-------------|
-| [reCAPTCHA v3 Solver](/solve) | `POST /api/solve` | Solve reCAPTCHA v3 and get a valid token |
-| [Square Tokenizer](/tokenize) | `POST /api/tokenize` | Tokenize a card via Square PCI + 3DS verification |
-
-## Quick Start
-
-### reCAPTCHA v3
-
-```python
+```python reCAPTCHA v3
 import httpx
 
 r = httpx.post(
@@ -43,9 +36,7 @@ data = r.json()
 print(data["token"])  # reCAPTCHA v3 token
 ```
 
-### Square Tokenizer
-
-```python
+```python Square Tokenizer
 import httpx
 
 r = httpx.post(
@@ -65,6 +56,8 @@ print(data["card_nonce"])          # Square card nonce
 print(data["verification_token"])  # Buyer verification token
 ```
 
+</CodeGroup>
+
 ## Base URL
 
 ```
@@ -73,10 +66,8 @@ https://api.bustedcap.com
 
 ## Authentication
 
-All requests require an API key in the `X-API-Key` header.
+All requests require an API key passed in the `X-API-Key` header. See [Authentication](/authentication) for details.
 
 ```
 X-API-Key: sk_live_your_key_here
 ```
-
-Contact the admin to get your API key.

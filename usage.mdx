@@ -1,23 +1,22 @@
 ---
-title: Check Usage
+title: "Check Usage"
 description: "Check your API key usage and remaining requests."
+api: "GET /api/usage"
 ---
-
-# Check Usage
-
-`GET /api/usage`
 
 Check how many requests you have used and how many remain.
 
-## Request Headers
+## Request
 
-| Header | Required | Description |
-|--------|----------|-------------|
-| `X-API-Key` | Yes | Your API key |
+<ParamField header="X-API-Key" type="string" required>
+  Your API key.
+</ParamField>
 
-## Example Request
+## Example
 
-```python
+<CodeGroup>
+
+```python Python
 import httpx
 
 r = httpx.get(
@@ -29,39 +28,45 @@ r = httpx.get(
 print(r.json())
 ```
 
-```bash
+```bash cURL
 curl https://api.bustedcap.com/api/usage \
   -H "X-API-Key: sk_live_your_key_here"
 ```
 
-## Success Response
+</CodeGroup>
 
-**Status: `200 OK`**
+## Response
 
-```json
-{
-  "owner": "john",
-  "requests_used": 42,
-  "requests_limit": 100,
-  "rate_per_minute": 10,
-  "expires_at": "2026-05-01T00:00:00+00:00"
-}
-```
+<ResponseField name="owner" type="string">
+  Key owner name.
+</ResponseField>
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `owner` | string | Key owner name |
-| `requests_used` | integer | Total requests made with this key |
-| `requests_limit` | integer or null | Maximum allowed requests (`null` if unlimited) |
-| `rate_per_minute` | integer | Maximum requests allowed per minute |
-| `expires_at` | string or null | Key expiration date in ISO format (`null` if no expiry) |
+<ResponseField name="requests_used" type="integer">
+  Total requests made with this key.
+</ResponseField>
 
-## Error Responses
+<ResponseField name="requests_limit" type="integer or null">
+  Maximum allowed requests. `null` if unlimited.
+</ResponseField>
 
-**Missing or invalid API key -- `401`**
+<ResponseField name="rate_per_minute" type="integer">
+  Maximum requests allowed per minute.
+</ResponseField>
+
+<ResponseField name="expires_at" type="string or null">
+  Key expiration date in ISO format. `null` if no expiry.
+</ResponseField>
+
+## Errors
+
+<Accordion title="401 -- Invalid API key">
 
 ```json
 {
   "detail": "Invalid API key"
 }
 ```
+
+Your API key is incorrect or does not exist. Double-check the key value.
+
+</Accordion>

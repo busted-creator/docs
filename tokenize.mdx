@@ -1,164 +1,247 @@
 ---
-title: Square Tokenizer
-description: "Tokenize a card via Square PCI connect and get a nonce + verification token."
+title: "Square Tokenizer"
+description: "Tokenize a card via Square PCI and get a nonce + verification token."
+api: "POST /api/tokenize"
 ---
 
-# Square Tokenizer
+Tokenize a card through Square's PCI endpoint. Returns a card nonce, card info, and buyer verification token for Square Online checkout.
 
-`POST /api/tokenize`
+## Request
 
-Tokenize a card through Square's PCI-connect endpoint. Returns a card nonce, card info, and buyer verification token -- ready to use in Square Online checkout.
+<ParamField header="X-API-Key" type="string" required>
+  API key for authentication.
+</ParamField>
 
-## Request Headers
+<ParamField body="cc" type="string" required>
+  Card number.
+</ParamField>
 
-| Header | Required | Description |
-|--------|----------|-------------|
-| `X-API-Key` | Yes | Your API key |
+<ParamField body="mm" type="string" required>
+  Expiry month (e.g., 03).
+</ParamField>
 
-## Request Body
+<ParamField body="yyyy" type="string" required>
+  Expiry year (e.g., 2027).
+</ParamField>
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `cc` | string | Yes | Card number |
-| `mm` | string | Yes | Expiry month (e.g., `"03"`) |
-| `yyyy` | string | Yes | Expiry year (e.g., `"2027"`) |
-| `cvv` | string | Yes | Card CVV |
-| `app_id` | string | Yes | Square application ID (starts with `sq0idp-`) |
-| `loc_id` | string | Yes | Square location ID |
-| `base_url` | string | Yes | The Square Online site URL |
-| `sq_version` | string | No | Square JS SDK version (default: `"1.83.1"`) |
-| `email` | string | No | Buyer email for verification |
-| `billing` | object | No | Billing address for buyer verification |
-| `intent` | string | No | Payment intent (default: `"CHARGE"`) |
+<ParamField body="cvv" type="string" required>
+  Card CVV.
+</ParamField>
 
-### Billing Object
+<ParamField body="app_id" type="string" required>
+  Square application ID (starts with sq0idp-).
+</ParamField>
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `given_name` | string | First name |
-| `family_name` | string | Last name |
-| `address_lines` | list | Address lines (e.g., `["123 Main St", ""]`) |
-| `city` | string | City |
-| `region` | string | State/province |
-| `postal_code` | string | ZIP/postal code |
-| `country` | string | Country code (e.g., `"US"`) |
+<ParamField body="loc_id" type="string" required>
+  Square location ID.
+</ParamField>
 
-## Example Request
+<ParamField body="base_url" type="string" required>
+  The Square Online site URL.
+</ParamField>
 
-```python
+<ParamField body="sq_version" type="string">
+  Square JS SDK version (default: 1.83.1).
+</ParamField>
+
+<ParamField body="email" type="string">
+  Buyer email for verification.
+</ParamField>
+
+<ParamField body="billing" type="object">
+  Billing address for buyer verification.
+  <Expandable title="billing properties">
+    <ParamField body="given_name" type="string">
+      First name.
+    </ParamField>
+    <ParamField body="family_name" type="string">
+      Last name.
+    </ParamField>
+    <ParamField body="address_lines" type="string[]">
+      Street address lines.
+    </ParamField>
+    <ParamField body="city" type="string">
+      City.
+    </ParamField>
+    <ParamField body="region" type="string">
+      State or region code.
+    </ParamField>
+    <ParamField body="postal_code" type="string">
+      Postal or ZIP code.
+    </ParamField>
+    <ParamField body="country" type="string">
+      Two-letter country code (e.g., US).
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="intent" type="string">
+  Payment intent (default: CHARGE).
+</ParamField>
+
+## Example
+
+<CodeGroup>
+
+```python Python
 import httpx
 
-r = httpx.post(
-    "https://api.bustedcap.com/api/tokenize",
+resp = httpx.post(
+    "https://your-api.com/api/tokenize",
+    headers={"X-API-Key": "your-api-key"},
     json={
-        "cc": cc,
-        "mm": mm,
-        "yyyy": yyyy,
-        "cvv": cvv,
-        "app_id": "sq0idp-xxxxx",
-        "loc_id": "LXXXXX",
+        "cc": "4111111111111111",
+        "mm": "03",
+        "yyyy": "2027",
+        "cvv": "123",
+        "app_id": "sq0idp-XXXXXXXXXXXXXXXXXXXXX",
+        "loc_id": "LXXXXXXXXXXXXXXXXXX",
         "base_url": "https://example.square.site",
-        "email": email,
-        "billing": billing,
+        "email": "john@example.com",
+        "billing": {
+            "given_name": "John",
+            "family_name": "Doe",
+            "address_lines": ["123 Main St"],
+            "city": "New York",
+            "region": "NY",
+            "postal_code": "10001",
+            "country": "US",
+        },
     },
-    headers={"X-API-Key": "sk_live_your_key_here"},
-    timeout=60,
 )
-
-data = r.json()
-print(data)
+print(resp.json())
 ```
 
-```bash
-curl -X POST https://api.bustedcap.com/api/tokenize \
+```bash cURL
+curl -X POST https://your-api.com/api/tokenize \
   -H "Content-Type: application/json" \
-  -H "X-API-Key: sk_live_your_key_here" \
-  -d '{"cc":"...","mm":"...","yyyy":"...","cvv":"...","app_id":"sq0idp-xxxxx","loc_id":"LXXXXX","base_url":"https://example.square.site"}'
+  -H "X-API-Key: your-api-key" \
+  -d '{
+    "cc": "4111111111111111",
+    "mm": "03",
+    "yyyy": "2027",
+    "cvv": "123",
+    "app_id": "sq0idp-XXXXXXXXXXXXXXXXXXXXX",
+    "loc_id": "LXXXXXXXXXXXXXXXXXX",
+    "base_url": "https://example.square.site",
+    "email": "john@example.com",
+    "billing": {
+      "given_name": "John",
+      "family_name": "Doe",
+      "address_lines": ["123 Main St"],
+      "city": "New York",
+      "region": "NY",
+      "postal_code": "10001",
+      "country": "US"
+    }
+  }'
 ```
 
-## Success Response
+</CodeGroup>
 
-**Status: `200 OK`**
+## Response
 
-```json
+<ResponseField name="status" type="string">
+  Result status -- `success` or `error`.
+</ResponseField>
+
+<ResponseField name="card_nonce" type="string">
+  Single-use card nonce returned by Square PCI.
+</ResponseField>
+
+<ResponseField name="card_info" type="object">
+  Details about the tokenized card.
+  <Expandable title="card_info properties">
+    <ResponseField name="brand" type="string">
+      Card brand (e.g., VISA, MASTERCARD).
+    </ResponseField>
+    <ResponseField name="last4" type="string">
+      Last four digits of the card number.
+    </ResponseField>
+    <ResponseField name="exp" type="string">
+      Expiration in MM/YYYY format.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="verification_token" type="string">
+  Single-use buyer verification token for completing checkout.
+</ResponseField>
+
+<ResponseField name="time" type="number">
+  Processing time in seconds.
+</ResponseField>
+
+<ResponseField name="remaining" type="integer">
+  Remaining API calls on your key.
+</ResponseField>
+
+```json Example Response
 {
   "status": "success",
-  "card_nonce": "cnon:XXXXXXXX",
+  "card_nonce": "cnon:card-nonce-ok",
   "card_info": {
-    "card_brand": "VISA",
-    "last_4": "1111",
-    "exp_month": 12,
-    "exp_year": 2027
+    "brand": "VISA",
+    "last4": "1111",
+    "exp": "03/2027"
   },
-  "verification_token": "verf:XXXXXXXX",
+  "verification_token": "verf:abc123xyz",
   "time": 8.42,
-  "remaining": 95
+  "remaining": 97
 }
 ```
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `status` | string | `"success"` |
-| `card_nonce` | string | Square card nonce for payment submission |
-| `card_info` | object | Card details (brand, last 4, expiry) |
-| `verification_token` | string | Buyer verification token for SCA/3DS |
-| `time` | float | Processing time in seconds |
-| `remaining` | integer or null | Remaining requests on your key (`null` if unlimited) |
+## How it works
 
-## Error Responses
+<Steps>
+  <Step title="Session initialization">
+    A new payment session is created against the Square Online site using
+    the provided application ID and location ID.
+  </Step>
+  <Step title="Card tokenization via Square PCI">
+    The card details are submitted to Square's PCI-compliant tokenization
+    endpoint, which returns a single-use card nonce.
+  </Step>
+  <Step title="Card verification and BIN lookup">
+    The card nonce is validated and a BIN lookup is performed to determine
+    the card brand, last four digits, and expiration date.
+  </Step>
+  <Step title="3D Secure verification">
+    If required, a 3D Secure challenge is processed to verify the
+    cardholder identity.
+  </Step>
+  <Step title="Buyer verification token generated">
+    A buyer verification token is generated and returned alongside the
+    card nonce. Both are single-use and ready for checkout submission.
+  </Step>
+</Steps>
 
-**Tokenization failed -- `400`**
+## Errors
 
-```json
-{
-  "status": "error",
-  "message": "Card number is invalid.",
-  "time": 3.1
-}
-```
+<AccordionGroup>
+  <Accordion title="400 -- Bad Request">
+    Missing or invalid parameters. Check that all required fields (`cc`, `mm`,
+    `yyyy`, `cvv`, `app_id`, `loc_id`, `base_url`) are present and correctly
+    formatted.
+  </Accordion>
+  <Accordion title="401 -- Unauthorized">
+    Invalid or missing `X-API-Key` header. Verify your API key is correct
+    and active.
+  </Accordion>
+  <Accordion title="429 -- Rate Limited">
+    Too many requests. You have exceeded your rate limit. Wait before
+    retrying or upgrade your plan.
+  </Accordion>
+  <Accordion title="500 -- Internal Server Error">
+    Tokenization failed upstream. The card may be invalid, the Square
+    application ID or location ID may be incorrect, or Square's PCI
+    endpoint may be temporarily unavailable. Retry or check your inputs.
+  </Accordion>
+</AccordionGroup>
 
-**Missing or invalid API key -- `401`**
-
-```json
-{
-  "detail": "Invalid API key"
-}
-```
-
-**Rate limit exceeded -- `429`**
-
-```json
-{
-  "detail": "Rate limit exceeded",
-  "retry_after": 12.5
-}
-```
-
-**Internal error -- `500`**
-
-```json
-{
-  "status": "error",
-  "message": "Connection timeout",
-  "time": 30.0
-}
-```
-
-## What It Does
-
-The API handles the full Square PCI tokenization flow:
-
-1. **Hydrate** -- initializes a Square PCI session
-2. **Proof-of-Work** -- solves Square's PoW challenge
-3. **Tokenize** -- submits card data to Square's PCI endpoint
-4. **BIN Lookup** -- detects card country
-5. **3DS Init** -- starts 3D Secure method
-6. **Fingerprinting** -- generates browser fingerprints
-7. **Buyer Verification** -- completes SCA verification
-8. **3DS Challenge** -- finalizes 3DS if required
-
-## Notes
-
-- Typical response time is **5-15 seconds** depending on 3DS requirements.
-- The `card_nonce` and `verification_token` are single-use. Request new ones for each transaction.
-- The `app_id` and `loc_id` are specific to each Square Online site. Find them in the site's page source.
+<Info>
+  Typical response time is 5-15 seconds. Both `card_nonce` and
+  `verification_token` are single-use -- they cannot be reused across
+  multiple checkout attempts. The `app_id` and `loc_id` values are
+  site-specific and must match the target Square Online store.
+</Info>

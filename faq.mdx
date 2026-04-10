@@ -1,92 +1,90 @@
 ---
 title: FAQ
-description: "Frequently asked questions about BustedSolver."
+description: "Frequently asked questions."
 ---
 
 # FAQ
 
 ## General
 
-### What services does BustedSolver offer?
+<AccordionGroup>
+  <Accordion title="What services does BustedSolver offer?">
+    BustedSolver currently offers two services:
+    - **reCAPTCHA v3 Solver** -- solve reCAPTCHA v3 challenges and get valid tokens.
+    - **Square Tokenizer** -- tokenize cards via Square PCI connect with full 3DS support.
+  </Accordion>
 
-BustedSolver currently offers two services:
-- **reCAPTCHA v3 Solver** -- solve reCAPTCHA v3 challenges and get valid tokens.
-- **Square Tokenizer** -- tokenize cards via Square PCI connect with full 3DS support.
+  <Accordion title="How fast are solves?">
+    Typical solve time is **2-8 seconds**. First solves for a new site may take up to 15 seconds. The `time` field in the response shows the exact solve duration.
+  </Accordion>
 
-### How fast are solves?
+  <Accordion title="What score do tokens get?">
+    BustedSolver produces **high-score tokens** (typically 0.7-0.9). The exact score depends on the target site.
+  </Accordion>
 
-Typical solve time is **2-8 seconds**. First solves for a new site may take up to 15 seconds. The `time` field in the response shows the exact solve duration.
+  <Accordion title="Are tokens single-use?">
+    Yes. Each token can only be verified once by Google. Request a new token for each submission.
+  </Accordion>
 
-### What score do tokens get?
-
-BustedSolver produces **high-score tokens** (typically 0.7-0.9). The exact score depends on the target site.
-
-### Are tokens single-use?
-
-Yes. Each token can only be verified once by Google. Request a new token for each submission.
-
-### How long do tokens last?
-
-Tokens expire after approximately **2 minutes**. Use them immediately after receiving them.
-
----
+  <Accordion title="How long do tokens last?">
+    Tokens expire after approximately **2 minutes**. Use them immediately after receiving them.
+  </Accordion>
+</AccordionGroup>
 
 ## API Keys
 
-### How do I get an API key?
+<AccordionGroup>
+  <Accordion title="How do I get an API key?">
+    Contact the admin on [Telegram](https://t.me/bustedcreator). Keys are issued manually.
+  </Accordion>
 
-Contact the admin on [Telegram](https://t.me/bustedcreator). Keys are issued manually.
+  <Accordion title="My key stopped working. What happened?">
+    Your key may have:
+    - **Expired** -- check `expires_at` via [Check Usage](/usage).
+    - **Hit the request limit** -- the key is removed automatically when all requests are used.
+    - **Been deactivated** -- contact admin.
+  </Accordion>
 
-### My key stopped working. What happened?
-
-Your key may have:
-- **Expired** -- check `expires_at` via [Check Usage](/usage).
-- **Hit the request limit** -- the key is removed automatically when all requests are used.
-- **Been deactivated** -- contact admin.
-
-### Can I get more requests or a higher rate limit?
-
-Yes. Contact admin to upgrade your key.
-
----
+  <Accordion title="Can I get more requests or a higher rate limit?">
+    Yes. Contact admin to upgrade your key.
+  </Accordion>
+</AccordionGroup>
 
 ## Troubleshooting
 
-### I get "Invalid site_key format"
+<AccordionGroup>
+  <Accordion title='I get "Invalid site_key format"'>
+    The site key must be exactly 40 characters and start with `6L`. Double-check the key from the target site.
+  </Accordion>
 
-The site key must be exactly 40 characters and start with `6L`. Double-check the key from the target site.
+  <Accordion title="I get a token but the site still rejects it">
+    Common causes:
+    - **Wrong action string** -- make sure it matches what the site uses. See [Best Practices](/best-practices).
+    - **Token expired** -- use the token within 2 minutes of receiving it.
+    - **IP mismatch** -- some sites check that the reCAPTCHA IP matches the form submission IP. Try using the `proxy` parameter.
+  </Accordion>
 
-### I get a token but the site still rejects it
+  <Accordion title='I get "Server busy" (503) errors'>
+    All solver workers are occupied. Wait a few seconds and retry. If this happens frequently, try spacing out your requests.
+  </Accordion>
 
-Common causes:
-- **Wrong action string** -- make sure it matches what the site uses. See [Best Practices](/best-practices).
-- **Token expired** -- use the token within 2 minutes of receiving it.
-- **IP mismatch** -- some sites check that the reCAPTCHA IP matches the form submission IP. Try using the `proxy` parameter.
+  <Accordion title='I get "Rate limit exceeded" (429)'>
+    You are sending too many requests per minute. Check your `rate_per_minute` via [Check Usage](/usage) and space out requests accordingly. The `retry_after` field tells you how long to wait.
+  </Accordion>
 
-### I get "Server busy" (503) errors
-
-All solver workers are occupied. Wait a few seconds and retry. If this happens frequently, try spacing out your requests.
-
-### I get "Rate limit exceeded" (429)
-
-You are sending too many requests per minute. Check your `rate_per_minute` via [Check Usage](/usage) and space out requests accordingly. The `retry_after` field tells you how long to wait.
-
-### Solves are slow for a new site
-
-The first solve for a new site/key combination may take up to 15 seconds. Subsequent solves are faster.
-
----
+  <Accordion title="Solves are slow for a new site">
+    The first solve for a new site/key combination may take up to 15 seconds. Subsequent solves are faster.
+  </Accordion>
+</AccordionGroup>
 
 ## Integration
 
-### Can I use BustedSolver with Node.js / Go / PHP?
+<AccordionGroup>
+  <Accordion title="Can I use BustedSolver with Node.js / Go / PHP?">
+    Yes. BustedSolver is a standard REST API. Use any HTTP client in any language. See the [Solve reCAPTCHA](/solve) page for cURL examples that work with any language.
+  </Accordion>
 
-Yes. BustedSolver is a standard REST API. Use any HTTP client in any language. See the [Solve reCAPTCHA](/solve) page for cURL examples that work with any language.
-
-### Do I need to run a browser?
-
-No. BustedSolver handles everything server-side. You only need to make HTTP requests.
-
-### Can I solve multiple captchas in parallel?
-
-Yes. Send multiple requests concurrently (within your rate limit). Each request is independent.
+  <Accordion title="Can I solve multiple captchas in parallel?">
+    Yes. Send multiple requests concurrently (within your rate limit). Each request is independent.
+  </Accordion>
+</AccordionGroup>

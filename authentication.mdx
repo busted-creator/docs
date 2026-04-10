@@ -1,17 +1,16 @@
 ---
-title: Authentication
+title: "Authentication"
 description: "How to authenticate with the BustedSolver API."
 ---
 
-# Authentication
-
 All API requests require an API key sent via the `X-API-Key` header.
 
-## Getting an API Key
+## Getting your key
 
-Contact the admin on [Telegram](https://t.me/bustedcreator) to get your API key. Keys are prefixed with `sk_live_`.
+Contact the admin on [Telegram](https://t.me/bustedcreator) to get your API key.
+Keys are prefixed with `sk_live_` and are unique to each user.
 
-## Using Your Key
+## Using your key
 
 Include your key in every request:
 
@@ -19,9 +18,9 @@ Include your key in every request:
 X-API-Key: sk_live_your_key_here
 ```
 
-### Python (httpx)
+<CodeGroup>
 
-```python
+```python Python
 headers = {"X-API-Key": "sk_live_your_key_here"}
 
 r = httpx.post(
@@ -32,47 +31,54 @@ r = httpx.post(
 )
 ```
 
-### cURL
-
-```bash
+```bash cURL
 curl -X POST https://api.bustedcap.com/api/solve \
   -H "Content-Type: application/json" \
   -H "X-API-Key: sk_live_your_key_here" \
   -d '{"site_key": "6Le...", "page_url": "https://example.com", "action": "submit"}'
 ```
 
-## Key Properties
+</CodeGroup>
+
+## Key properties
 
 Each API key has the following properties:
 
-| Property | Description |
-|----------|-------------|
-| **Owner** | Name associated with the key |
-| **Request limit** | Maximum number of solve requests (or unlimited) |
-| **Rate limit** | Maximum requests per minute |
-| **Expiration** | Date when the key expires (or never) |
+| Property          | Description                                       |
+| ----------------- | ------------------------------------------------- |
+| **Owner**         | Name associated with the key                      |
+| **Request limit** | Maximum number of solve requests (or unlimited)   |
+| **Rate limit**    | Maximum requests per minute                       |
+| **Expiration**    | Date when the key expires (or never)              |
 
 Use the [Check Usage](/usage) endpoint to view your key details at any time.
 
-## Security Best Practices
+## Security
 
-- **Never hardcode** your API key in source code. Use environment variables instead.
-- **Never share** your key publicly (e.g., GitHub, Discord, forums).
-- **Rotate keys** if you suspect your key has been compromised -- contact admin for a replacement.
-- Each key is tied to a single owner. Do not share keys across teams or users.
+<Warning>
+Never hardcode your API key in source code. Never share your key publicly (e.g., GitHub, Discord, forums).
+Rotate keys immediately if you suspect compromise -- contact admin for a replacement.
+</Warning>
 
-### Using Environment Variables
+Store your key in an environment variable instead:
 
-```python
+<CodeGroup>
+
+```python Python
 import os
 
 api_key = os.environ["BUSTED_API_KEY"]
 ```
 
-```bash
+```bash Bash
 export BUSTED_API_KEY="sk_live_your_key_here"
 ```
 
-## Failed Authentication
+</CodeGroup>
 
-After **10 consecutive failed authentication attempts**, your IP will be temporarily blocked for 15 minutes. See [Error Codes](/errors) for details.
+## Failed authentication
+
+<Note>
+After 10 consecutive failed authentication attempts, your IP will be temporarily blocked for 15 minutes.
+See [Error Codes](/errors) for details.
+</Note>

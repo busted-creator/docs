@@ -1,33 +1,31 @@
 ---
 title: Changelog
-description: "Latest updates and changes to the BustedSolver API."
+description: "Latest updates."
 ---
 
 # Changelog
 
 All notable changes to the BustedSolver API.
 
----
+<Steps>
+  <Step title="April 2026 -- Square Tokenizer">
+    - Square PCI tokenization via `POST /api/tokenize`
+    - Full 3DS/SCA buyer verification support
+    - PoW challenge solving
+    - Fingerprint generation
+    - Same API key auth and rate limits as reCAPTCHA solver
+    - Python SDK updated with `solver.tokenize()` method
+    - Documentation updated
+  </Step>
 
-## April 2026
-
-### Square Tokenizer -- New Service
-
-- Square PCI tokenization via `POST /api/tokenize`
-- Full 3DS/SCA buyer verification support
-- PoW challenge solving
-- Browser fingerprint generation
-- Same API key auth and rate limits as reCAPTCHA solver
-- Python SDK updated with `solver.tokenize()` method
-- Documentation updated
-
-### API v1.0 -- Initial Release
-
-- reCAPTCHA v3 solving via `POST /api/solve`
-- Usage tracking via `GET /api/usage`
-- API key authentication with `X-API-Key` header
-- Per-key rate limits and request quotas
-- Proxy support (`http`, `https`, `socks5`)
-- IP blocking after failed auth attempts
-- Python SDK with sync and async support
-- Public documentation launched
+  <Step title="April 2026 -- API v1.0">
+    - reCAPTCHA v3 solving via `POST /api/solve`
+    - Usage tracking via `GET /api/usage`
+    - API key authentication with `X-API-Key` header
+    - Per-key rate limits and request quotas
+    - Proxy support (`http`, `https`, `socks5`)
+    - IP blocking after failed auth attempts
+    - Python SDK with sync and async support
+    - Public documentation launched
+  </Step>
+</Steps>
